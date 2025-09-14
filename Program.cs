@@ -5,23 +5,26 @@
         static Random random = new Random();
         
         static ManualResetEvent mre = new ManualResetEvent(true);
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             
             Thread[] threads = new Thread[4];
-
-            
+           
             
             List<int> ints = new List<int>();
-           
 
-            GenerationNumber(ints);
-            MaxinumNumber(ints);
-            MinimumNumber(ints);
-            AverageNumber(ints);
 
+            await new Program().GenerationNumber(ints);
+            var maxTask = new Program().MaxinumNumber(ints);
+            var minTask = new Program().MinimumNumber(ints);
+            var avgTask = new Program().AverageNumber(ints);
+
+            //Гуглил как вызываются задачи нашел этот вариант от Гемини, узнал, что оказывается не статические
+            // методы нельзя вызывать в блоке Main, не замечал этого, ну теперь знаю, надеюсь теперь домашка корректная.
+
+            await Task.WhenAll(maxTask, minTask, avgTask);
         }
-        public  static List<int> GenerationNumber(List<int> num)
+        public async Task GenerationNumber(List<int> num)
         {
             mre.Reset();
             for (int i = 0; i < 1000; i++)
@@ -30,25 +33,25 @@
                 
             }
             mre.Set();
-            return num;
+            
             
         }
 
-        public static void MaxinumNumber(List<int> num) {
+        public async Task MaxinumNumber(List<int> num) {
             mre.Reset();
             Console.WriteLine($"Number Max: {num.Max()}");
             mre.Set();
             
         }
 
-        public static void MinimumNumber(List<int> num)
+        public async Task MinimumNumber(List<int> num)
         {
             mre.Reset();
             Console.WriteLine($"Number Min: {num.Min()}");
             mre.Set();
         }
 
-        public static void AverageNumber(List<int> num)
+        public async Task AverageNumber(List<int> num)
         {
             mre.Reset();
             double number = num.Average();
